@@ -132,8 +132,6 @@ void detecterVoisins(Coord *voisins, int *nbVoisins, int lig, int col)
     }
 }
 
-
-
 /*
     BUT: changement de la couleur des pions du joueur adverse si la case saisie
         par le joueur courant est bien placée et se trouve à côté
@@ -310,7 +308,7 @@ void initJoueurHumain(Plateau *p, Joueur *j1, Joueur *j2)
 void initJoueurHumainPc(Plateau *p, Joueur *j1, Joueur *j2) {
     printf("Quel est le nom du joueur (symbol o) :");
     scanf("%s", j1->nom);
-    sprintf(j2->nom, "Pc");
+    sprintf(j2->nom,"%s", "Pc");
     j1->score = 2;
     j1->symbole = 'o';
     p->joueurs[0] = j1;
@@ -463,6 +461,8 @@ void dessinChampInformation(Plateau *p, int *lar, int *haut) {
     MLV_draw_text(*lar - CHAMP_INFORMATION + 20, *haut/9+100, "Joueur Adverse:", MLV_COLOR_BLACK);
     MLV_draw_text(*lar - CHAMP_INFORMATION + 20, *haut/9+120, p->joueurs[1]->nom, MLV_COLOR_WHITE);
     MLV_draw_text(*lar - CHAMP_INFORMATION + 20, *haut/9+140, sco1, MLV_COLOR_BLACK);
+    free(sco1);
+    free(sco0);
 }
 
 /*
@@ -552,6 +552,7 @@ void afficheGagnantgraphique(Plateau *p, int *haut){
         sprintf(text, "Egalité %d à %d.", p->joueurs[0]->score, p->joueurs[1]->score);
     MLV_draw_adapted_text_box(50, *haut/2, text, 2, MLV_COLOR_WHITE, MLV_COLOR_WHITE, MLV_COLOR_BLACK, MLV_TEXT_CENTER);
     MLV_actualise_window();
+    free(text);
 }
 
 
@@ -599,36 +600,39 @@ int menuJeu(int *lar, int *haut) {
 
 void initJoueurGraphique(Plateau *p, Joueur *j1, Joueur *j2, int *lar, int *haut) {
     char *text1, *text2;
-    MLV_actualise_window();
+    MLV_draw_filled_rectangle(0, 0, *lar, *haut, MLV_COLOR_SKY_BLUE);
     MLV_draw_text(*lar/2-20, *haut/8, "ATAXX", MLV_COLOR_RED);
-    MLV_wait_input_box(*lar/2-50, *haut/4-20, *lar/2+150, *haut/4+20, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_COLOR_BLACK, "Nom Joueur 1: ", &text1);
+    MLV_wait_input_box(*lar/2-50, *haut/4-20, *lar/2+150, *haut/4+20, MLV_COLOR_SKY_BLUE, MLV_COLOR_BLACK, MLV_COLOR_SKY_BLUE, "Nom Joueur 1: ", &text1);
     MLV_actualise_window();
-    MLV_wait_input_box(*lar/2-50, *haut/4-20, *lar/2+150, *haut/4+20, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_COLOR_BLACK, "Nom Joueur 2: ", &text2);
+    MLV_wait_input_box(*lar/2-50, *haut/4-20, *lar/2+150, *haut/4+20, MLV_COLOR_SKY_BLUE, MLV_COLOR_BLACK, MLV_COLOR_SKY_BLUE, "Nom Joueur 2: ", &text2);
     MLV_actualise_window();
-    sprintf(j1->nom, text1);
-    sprintf(j2->nom, text2);
+    sprintf(j1->nom,"%s", text1);
+    sprintf(j2->nom,"%s", text2);
     j1->score =2;
     j2->score = 2;
     j1->symbole = 'o';
     j2->symbole = 'x';
     p->joueurs[0] = j1;
     p->joueurs[1] = j2;
+    free(text1);
+    free(text2);
 }
 
 void initJoueurGraphiquePc(Plateau *p, Joueur *j1, Joueur *j2, int *lar, int *haut) {
     char *text1;
-    MLV_actualise_window();
+    MLV_draw_filled_rectangle(0, 0, *lar, *haut, MLV_COLOR_SKY_BLUE);
     MLV_draw_text(*lar/2-20, *haut/8, "ATAXX", MLV_COLOR_RED);
-    MLV_wait_input_box(*lar/2-50, *haut/4-20, *lar/2+150, *haut/4+20, MLV_COLOR_BLACK, MLV_COLOR_WHITE, MLV_COLOR_BLACK, "Nom Joueur 1: ", &text1);
+    MLV_wait_input_box(*lar/2-50, *haut/4-20, *lar/2+150, *haut/4+20, MLV_COLOR_SKY_BLUE, MLV_COLOR_BLACK, MLV_COLOR_SKY_BLUE, "Nom Joueur 1: ", &text1);
     MLV_actualise_window();
-    sprintf(j1->nom, text1);
-    sprintf(j2->nom, "Pc");
+    sprintf(j1->nom, "%s", text1);
+    sprintf(j2->nom, "%s", "Pc");
     j1->score =2;
     j2->score = 2;
     j1->symbole = 'o';
     j2->symbole = 'x';
     p->joueurs[0] = j1;
     p->joueurs[1] = j2;
+    free(text1);
 }
 
 void sauvegardPlateau(Plateau *p)
@@ -739,7 +743,6 @@ int main(int argc, char **argv)
         usage();
         exit(1);
     }
-    printf("1: %c et 2: %c\n", argv[1][1], argv[2][1]);
     if (argv[1][1] == 'a' || argv[2][1] == 'a') {
         if (argv[1][1] == 'h' || argv[2][1] == 'h') jeuAsciiBinome();
         else if (argv[1][1] == 'o' || argv[2][1] == 'o') jeuAsciiPc();
@@ -749,9 +752,5 @@ int main(int argc, char **argv)
         else if (argv[1][1] == 'o' || argv[2][1] == 'o') jeuGraphiquePc();
         else exit(1);
     } else exit(1);
-    free(sco0);
-    free(sco1);
-    free(text1);
-    free(text2);
     return 0;
 }
